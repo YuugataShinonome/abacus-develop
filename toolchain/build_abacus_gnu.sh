@@ -1,9 +1,4 @@
 #!/bin/bash
-#SBATCH -J build
-#SBATCH -N 1
-#SBATCH -n 16
-#SBATCH -o install.log
-#SBATCH -e install.err
 # install ABACUS with libxc and deepks
 # JamesMisaka in 2023.08.31
 
@@ -30,8 +25,8 @@ CEREAL=$INSTALL_DIR/cereal-1.3.2/include/cereal
 LIBXC=$INSTALL_DIR/libxc-6.2.2
 # LIBRI=$INSTALL_DIR/LibRI-0.1.1
 # LIBCOMM=$INSTALL_DIR/LibComm-0.1.0
-# LIBTORCH=$INSTALL_DIR/libtorch-2.0.1/share/cmake/Torch
-# LIBNPY=$INSTALL_DIR/libnpy-1.0.1/include
+LIBTORCH=$INSTALL_DIR/libtorch-2.0.1/share/cmake/Torch
+LIBNPY=$INSTALL_DIR/libnpy-1.0.1/include
 # DEEPMD=$HOME/apps/anaconda3/envs/deepmd
 
 cmake -B $BUILD_DIR -DCMAKE_INSTALL_PREFIX=$PREFIX \
@@ -47,9 +42,9 @@ cmake -B $BUILD_DIR -DCMAKE_INSTALL_PREFIX=$PREFIX \
         -DENABLE_LIBXC=ON \
         -DUSE_OPENMP=ON \
         -DUSE_ELPA=ON \
-#         -DENABLE_DEEPKS=1 \
-#         -DTorch_DIR=$LIBTORCH \
-#         -Dlibnpy_INCLUDE_DIR=$LIBNPY \
+        -DENABLE_DEEPKS=1 \
+        -DTorch_DIR=$LIBTORCH \
+        -Dlibnpy_INCLUDE_DIR=$LIBNPY \
 #         -DENABLE_LIBRI=ON \
 #         -DLIBRI_DIR=$LIBRI \
 #         -DLIBCOMM_DIR=$LIBCOMM \
