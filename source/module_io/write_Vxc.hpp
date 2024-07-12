@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __WRITE_VXC_H_
+#define __WRITE_VXC_H_
 #include "module_base/parallel_reduce.h"
 #include "module_base/scalapack_connector.h"
 #include "module_hamilt_lcao/hamilt_lcaodft/operator_lcao/op_dftu_lcao.h"
@@ -26,12 +27,12 @@ struct TGint<std::complex<double>>
 namespace ModuleIO
 {
 
-inline void gint_vl(Gint_Gamma& gg, Gint_inout& io, LCAO_Matrix& lm)
+inline void gint_vl(Gint_Gamma& gg, Gint_inout& io)
 {
     gg.cal_vlocal(&io, false);
 };
 
-inline void gint_vl(Gint_k& gk, Gint_inout& io, LCAO_Matrix& lm, ModuleBase::matrix& wg)
+inline void gint_vl(Gint_k& gk, Gint_inout& io, ModuleBase::matrix& wg)
 {
     gk.cal_gint(&io);
 };
@@ -303,8 +304,9 @@ void write_Vxc(int nspin,
     // R (the number of hR: 1 for nspin=1, 4; 2 for nspin=2)
     int nspin0 = (nspin == 2) ? 2 : 1;
     std::vector<hamilt::HContainer<TR>> vxcs_R_ao(nspin0, hamilt::HContainer<TR>(pv));
-    for (int is = 0; is < nspin0; ++is)
+    for (int is = 0; is < nspin0; ++is) {
         vxcs_R_ao[is].set_zero();
+}
     // k (size for each k-point)
     hamilt::HS_Matrix_K<TK> vxc_k_ao(pv, 1); // only hk is needed, sk is skipped
 
@@ -330,9 +332,9 @@ void write_Vxc(int nspin,
     std::vector<std::vector<double>> e_orb_locxc; // orbital energy (local XC)
     std::vector<std::vector<double>> e_orb_tot;   // orbital energy (total)
 #ifdef __EXX
-    hamilt::OperatorEXX<hamilt::OperatorLCAO<TK, TR>> vexx_op_ao(&vxc_k_ao, &lm, nullptr, kv);
+    hamilt::OperatorEXX<hamilt::OperatorLCAO<TK, TR>> vexx_op_ao(&vxc_k_ao, &lm, nullptr, kv, lm.Hexxd, lm.Hexxc, hamilt::Add_Hexx_Type::k);
     hamilt::HS_Matrix_K<TK> vexxonly_k_ao(pv, 1); // only hk is needed, sk is skipped
-    hamilt::OperatorEXX<hamilt::OperatorLCAO<TK, TR>> vexxonly_op_ao(&vexxonly_k_ao, &lm, nullptr, kv);
+    hamilt::OperatorEXX<hamilt::OperatorLCAO<TK, TR>> vexxonly_op_ao(&vexxonly_k_ao, &lm, nullptr, kv, lm.Hexxd, lm.Hexxc, hamilt::Add_Hexx_Type::k);
     std::vector<std::vector<double>> e_orb_exx; // orbital energy (EXX)
 #endif
     hamilt::OperatorDFTU<hamilt::OperatorLCAO<TK, TR>> vdftu_op_ao(&vxc_k_ao, kv.kvec_d, nullptr, kv.isk);
@@ -436,3 +438,4 @@ void write_Vxc(int nspin,
     }
 }
 } // namespace ModuleIO
+#endif
